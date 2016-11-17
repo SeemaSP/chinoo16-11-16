@@ -1,0 +1,294 @@
+{% load admin_static material_admin i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+        {% block favicon %}<link href="{% static 'material/imgs/favicon.png' %}" rel="shortcut icon">{% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+        
+        {% block extrastyle %}{% endblock %}
+        		
+		<!-- #A bunch of css in admin's base.html in droana -->
+		<!-- Bootstrap Core CSS -->
+		<!-- {% static "admin/vendor/bootstrap/css/bootstrap.min.css"%} -->
+		<link href="{% static 'sbv2test/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+		<!-- {% static "admin/vendor/metisMenu/metisMenu.min.css"%} -->
+		<!-- MetisMenu CSS -->
+		<link href="{% static 'sbv2test/vendor/metisMenu/metisMenu.min.css'%}" rel="stylesheet">
+		<!-- {% static "admin/dist/css/sb-admin-2.css"%} -->
+		<!-- Custom CSS -->
+		<link href="{% static 'sbv2test/dist/css/sb-admin-2.css'%}" rel="stylesheet">
+		<!-- {% static "admin/vendor/morrisjs/morris.css"%} -->
+		<!-- Morris Charts CSS -->
+		<link href="{% static 'sbv2test/vendor/morrisjs/morris.css'%}" rel="stylesheet">
+		<!-- {% static "admin/vendor/font-awesome/css/font-awesome.min.css"%} -->
+		<!-- Custom Fonts -->
+		<link href="{% static 'sbv2test/vendor/font-awesome/css/font-awesome.min.css'%}" rel="stylesheet" type="text/css">
+
+		{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+		{% block js %}
+			<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+			<script>
+				// Use same django for material and django admin
+				var django = django || {};
+				django.jQuery = jQuery.noConflict(true);
+				window.jQuery = window.$ = django.jQuery
+			</script>
+			<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+			<script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+			{% if user.is_authenticated %}<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>{% endif %}
+			{{ media.js }}
+		{% endblock js %}
+		
+		{% block extrahead %}{% endblock %}
+		{% endblock head %}
+		<style>
+			@font-face {
+				font-family: 'Material Icons';
+				font-style: normal;
+				font-weight: 400;
+				src: url({% static 'material/fonts/material-design-icons/MaterialIcons-Regular.eot' %}); /* For IE6-8 */
+				src: local('Material Icons'),
+				local('MaterialIcons-Regular'),
+				url({% static 'material/fonts/material-design-icons/MaterialIcons-Regular.woff2' %}) format('woff2'),
+				url({% static 'material/fonts/material-design-icons/MaterialIcons-Regular.woff' %}) format('woff'),
+				url({% static 'material/fonts/material-design-icons/MaterialIcons-Regular.ttf' %}) format('truetype');
+						}
+
+			.material-icons {
+				font-family: 'Material Icons';
+				font-weight: none;
+				font-style: normal;
+				font-size: 24px;  /* Preferred icon size */
+				display: inline-block;
+				width: 1em;
+				height: 1em;
+				line-height: 1;
+				text-transform: none;
+				letter-spacing: normal;
+				word-wrap: normal;
+				white-space: nowrap;
+				direction: ltr;
+				
+				/* Support for all WebKit browsers. */
+				-webkit-font-smoothing: antialiased;
+				
+				/* Support for Safari and Chrome. */
+				text-rendering: optimizeLegibility;
+				
+				/* Support for Firefox. */
+				-moz-osx-font-smoothing: grayscale;
+
+				/* Support for IE. */
+				font-feature-settings: 'liga';
+							}
+
+			/* BREADCRUMBS */
+			
+			nav.breadcrumbs {
+				height: 48px;
+				line-height: 48px;
+				box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 0px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); }
+				nav.breadcrumbs a:first-child {
+				padding-left: 25px; }
+				nav.breadcrumbs a {
+				font-size: 3rem;
+				color: rgba(0, 0, 0); }
+				nav.breadcrumbs a.active {
+				color: black; }
+				nav.breadcrumbs a:not(:first-child):before {
+				content: '\E5CC';
+				color: rgba(0, 0, 0);
+				vertical-align: top;
+				display: inline-block;
+				font-family: 'Material Icons';
+				font-weight: normal;
+				font-style: normal;
+				font-size: 30px;
+				margin: 0 5px 0 4px;
+				-webkit-font-smoothing: antialiased; }
+				
+				<!-- https://github.com/google/material-design-icons/blob/master/iconfont/codepoints
+					Refer the site above for the codepoints used in content which is chevron right
+					for the breadcrumbs.
+					Can use FontAwesome as well but used this instead.
+				-->
+			@media only screen and (max-width: 992px) {
+				nav.breadcrumbs {
+				text-align: center; } }
+
+			@media only screen and (max-width: 600px) {
+				nav.breadcrumbs {
+				white-space: nowrap; }
+				nav.breadcrumbs .nav-wrapper1 {
+				width: 100%;
+				overflow-x: hidden;
+				padding: 0 20px 0 10px;
+				text-overflow: ellipsis; } }	  
+		</style>			
+    </head>
+    <body class="{% block bodyclass %}{% endblock %}">
+       <div id="wrapper">
+			{% block header %}
+				{% if not is_popup %}
+					<!-- Navigation -->
+					<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href="index.html">SB Admin v2.0</a>
+						</div>
+						<!-- /.navbar-header -->
+						<ul class="nav navbar-top-links navbar-right">
+							{% if user.is_active and user.is_staff %}
+								{% url 'django-admindocs-docroot' as docsroot %}
+								{% if docsroot %}
+									<li><a href="{{ docsroot }}">{% trans 'Documentation' %}</a></li>
+								{% endif %}
+							{% endif %}
+							{% if user.has_usable_password %}
+								<li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
+							{% endif %}
+							{% if user.is_authenticated %}
+								<li><a href="{% url 'admin:logout' %}" data-turbolinks="false"><i class="fa fa-sign-out fa-fw"></i>{% trans "Logout" %}</a></li>
+							{% else %}
+								<li><a href="{% url 'admin:login' %}" data-turbolinks="false"><i class="glyphicon-log-in"></i>{% trans "Login" %}</a></li>
+							{% endif %}
+						</ul>
+						<!-- /.navbar-top-links -->		
+					</nav>            
+				{% endif %}
+			{% endblock header %}
+			<!-- </header> -->
+						
+			{% block breadcrumbs %}
+                {% if not is_popup %}
+					<nav class="breadcrumbs">
+						<div class="nav-wrapper1">
+							{% block breadcrumbs_items %}{% endblock %}
+						</div>
+					</nav>
+                {% endif %}
+            {% endblock %}		
+			
+	   
+			<div id="content" class="wrapper"> 
+				{% block mainbody %}
+					{% block sidebar %}
+						<!-- adding the sidebar here  -->				
+						<div class="navbar-default sidebar" role="navigation">
+							<div class="sidebar-nav navbar-collapse">
+								<ul class="nav" id="side-menu">
+									{% if site_url %}
+										{% block back_link %}<li><a href="{{ site_url }}"><i class="fa fa-arrow-left"></i> {% trans 'View site' %}</a></li>{% endblock %}
+									{% endif %}
+									
+									{% get_app_list request as app_list %}
+									{% for app in app_list %}
+										<!-- <li {% if app.active %}class="active"{% endif %}> -->
+											<li>
+											<a>{% if app.name == 'Site Modules' %}<i class="fa fa-th "></i>{% else %}{{ app.app_icon }}{% endif %}<!-- {{ app.app_icon }} --> {{ app.name|truncatechars:23 }}<span class="fa arrow"></a>
+											<ul class="nav nav-second-level">
+												<!-- <li>											 -->
+													<!-- <div {% if app.active %}style="display:block"{% endif %}> -->
+													<!-- <ul> -->
+														{% for model in app.models %}
+														<li>
+															<a href="{{ model.admin_url }}">{{ model.name }}</a>
+														</li>
+														{% endfor %}
+													<!-- </ul> -->
+													<!-- </div> -->
+												<!-- </li> -->
+											</ul>
+											</li>
+									{% endfor %}
+															
+								</ul>
+							</div>
+							<!-- /.sidebar-collapse -->
+						</div>
+						<!-- /.navbar-static-side -->
+					{% endblock sidebar%}
+					
+					{% block navbar %}{% endblock navbar %}
+					
+					{% block messages %}{% endblock messages %}
+					
+					<div id="page-wrapper">
+						{% block content %}
+						{% endblock content%}
+					</div>
+				
+				{% endblock mainbody %}		
+			</div>
+		{% block footer %}{% endblock footer%}
+		{% block bottomjs %}{% endblock bottomjs%}
+	   </div>
+	   <!--  <header> -->       
+
+        <!-- {% include 'admin/includes/material_js.html' %} -->
+        {% block extrajs %}{% endblock %}
+       
+		<!-- jQuery -->
+	<!-- {% static "admin/vendor/jquery/jquery.min.js"%} -->
+    <script src="{% static 'sbv2test/vendor/jquery/jquery.min.js'%}"></script>
+	<!-- {% static "admin/vendor/bootstrap/js/bootstrap.min.js"%} -->
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'sbv2test/vendor/bootstrap/js/bootstrap.min.js'%}"></script>
+	<!-- {% static "admin/vendor/metisMenu/metisMenu.min.js"%} -->
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{% static 'sbv2test/vendor/metisMenu/metisMenu.min.js'%}"></script>
+	<!-- {% static 'admin/vendor/raphael/raphael.min.js'%} -->
+    <!-- Morris Charts JavaScript -->
+    <script src="{% static 'sbv2test/vendor/raphael/raphael.min.js'%}"></script>
+	<!-- {% static "admin/vendor/morrisjs/morris.min.js"%} -->
+    <script src="{% static 'sbv2test/vendor/morrisjs/morris.min.js'%}"></script>
+	<!-- {% static "admin/data/morris-data.js"%} -->
+    <script src="{% static 'sbv2test/data/morris-data.js'%}"></script>
+
+    <!-- Custom Theme JavaScript -->
+	<!-- {% static "admin/dist/js/sb-admin-2.js"%} -->
+    <script src="{% static 'sbv2test/dist/js/sb-admin-2.js'%}"></script>
+
+    </body>
+</html>
+<!--
+    <body>
+        <ul id="user-menu" class="dropdown-content">
+        </ul>
+        {# endif #}
+
+        {# if not is_popup #}
+        <header>
+            <nav id="header" class="nav-top">
+                <div class="nav-wrapper">
+                    <a href="/" class="page-title hide-on-med-and-down">{# block brand-logo #}{# trans 'Administration' #}{# endblock #}</a>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse full"><i class="material-icons">menu</i></a>
+
+                    <ul class="right">
+                        {# if user.is_authenticated #}
+                        <li><a class="dropdown-button constrain_width" href="#!" data-activates="user-menu">{{ user.get_full_name }}<i class="material-icons right">arrow_drop_down</i></a></li>
+                        {# endif #}
+                    </ul>
+                </div>
+
+                <ul id="nav-mobile" class="side-nav fixed module-menu">
+                    <li class="logo valign-wrapper">
+                        <a href="{# url 'admin:index' #}" class="no-navigation">
+                            {# block branding #}{# endblock #}
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </header>
+        {# endif #}
+-->
